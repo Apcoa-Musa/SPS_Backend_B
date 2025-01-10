@@ -1,0 +1,6 @@
+@GarageQueueUpload_HostAddress = http://localhost:5108
+
+GET {{GarageQueueUpload_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
