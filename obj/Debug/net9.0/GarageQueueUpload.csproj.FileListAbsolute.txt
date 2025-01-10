@@ -123,3 +123,4 @@ C:\Users\mvakilov-ep\Desktop\GarageQueueUpload\obj\Debug\net9.0\refint\GarageQue
 C:\Users\mvakilov-ep\Desktop\GarageQueueUpload\obj\Debug\net9.0\GarageQueueUpload.pdb
 C:\Users\mvakilov-ep\Desktop\GarageQueueUpload\obj\Debug\net9.0\GarageQueueUpload.genruntimeconfig.cache
 C:\Users\mvakilov-ep\Desktop\GarageQueueUpload\obj\Debug\net9.0\ref\GarageQueueUpload.dll
+C:\Users\mvakilov-ep\Desktop\GarageQueueUpload\obj\Debug\net9.0\GarageQueueUpload.sourcelink.json

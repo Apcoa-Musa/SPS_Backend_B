@@ -1,3 +1,5 @@
+using System;
+
 public class QueueModel
 {
     public string Id { get; set; }
