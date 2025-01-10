@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GarageQueueUpload")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+789dc24ac77046abd789fbc604e993b0b07aa89e")]
 [assembly: System.Reflection.AssemblyProductAttribute("GarageQueueUpload")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GarageQueueUpload")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
