@@ -32,7 +32,7 @@ namespace GarageQueueUpload.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Ett fel uppstod vid hämtning av ködata.", error = ex.Message });
+                return StatusCode(500, new { message = "Ett fel uppstod vid hämtning av ködata." + ex.Message, error = ex.Message });
             }
         }
 
