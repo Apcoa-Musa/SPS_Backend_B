@@ -14,7 +14,7 @@ namespace GarageQueueUpload.Services
             //_httpClient = httpClient;
         }
 
-        public async Task<QueueModel> GetQueueById(Guid id)
+        public async Task<QueueModel> GetQueueById(string id)
         {
             var response = await _httpClient.GetAsync($"/api/queue/GetById/{id}");
             response.EnsureSuccessStatusCode();
