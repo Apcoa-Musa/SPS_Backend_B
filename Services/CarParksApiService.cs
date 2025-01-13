@@ -6,11 +6,12 @@ namespace GarageQueueUpload.Services
 {
     public class CarParksApiService
     {
-        private readonly HttpClient _httpClient;
+        //private readonly HttpClient _httpClient;
+        private static readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://carparks-api.sps-stage.europark.local/") };
 
         public CarParksApiService(HttpClient httpClient)
         {
-            _httpClient = httpClient;
+            //_httpClient = httpClient;
         }
 
         public async Task<QueueModel> GetQueueById(Guid id)
