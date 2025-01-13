@@ -19,29 +19,33 @@ namespace GarageQueueUpload.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
+            if (!Guid.TryParse(id, out Guid parsedId))
+            {
+                return BadRequest(new { message = "Id måste vara ett giltigt Guid." });
+            }
+
             try
             {
-                var queue = await _carParksApiService.GetQueueById(id);
+                var queue = await _carParksApiService.GetQueueById(parsedId);
                 return queue != null ? Ok(queue) : NotFound(new { message = $"Ingen kö hittades med ID {id}." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Ett fel uppstod vid hämtning av ködata." + ex.Message, error = ex.Message });
+                return StatusCode(500, new { message = "Ett fel uppstod vid hämtning av ködata.", error = ex.Message });
             }
         }
 
         [HttpGet("GetByCarParkId/{carParkId}")]
         public async Task<IActionResult> GetByCarParkId(string carParkId)
         {
-            //if (string.IsNullOrWhiteSpace(carParkId))
-            //    return BadRequest(new { message = "carParkId är obligatoriskt och får inte vara tomt." });
-
-            //if (!int.TryParse(carParkId, out int parsedCarParkId))
-            //    return BadRequest(new { message = "CarParkId måste vara ett giltigt heltal." });
+            if (!Guid.TryParse(carParkId, out Guid parsedCarParkId))
+            {
+                return BadRequest(new { message = "CarParkId måste vara ett giltigt Guid." });
+            }
 
             try
             {
-                var queue = await _carParksApiService.GetQueueByCarParkId(carParkId);
+                var queue = await _carParksApiService.GetQueueByCarParkId(parsedCarParkId);
                 return queue != null ? Ok(queue) : NotFound(new { message = $"Ingen kö hittades för CarParkId {carParkId}." });
             }
             catch (Exception ex)
@@ -53,11 +57,10 @@ namespace GarageQueueUpload.Controllers
         [HttpGet("GetQueueDetailsForGarage/{carParkId}")]
         public async Task<IActionResult> GetQueueDetailsForGarage(string carParkId)
         {
-            if (string.IsNullOrWhiteSpace(carParkId))
-                return BadRequest(new { message = "carParkId är obligatoriskt och får inte vara tomt." });
-
-            if (!int.TryParse(carParkId, out int parsedCarParkId))
-                return BadRequest(new { message = "CarParkId måste vara ett giltigt heltal." });
+            if (!Guid.TryParse(carParkId, out Guid parsedCarParkId))
+            {
+                return BadRequest(new { message = "CarParkId måste vara ett giltigt Guid." });
+            }
 
             try
             {
