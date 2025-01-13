@@ -39,11 +39,11 @@ namespace GarageQueueUpload.Controllers
         [HttpGet("GetByCarParkId/{carParkId}")]
         public async Task<IActionResult> GetByCarParkId(string carParkId)
         {
-            if (string.IsNullOrWhiteSpace(carParkId))
-                return BadRequest(new { message = "carParkId är obligatoriskt och får inte vara tomt." });
+            //if (string.IsNullOrWhiteSpace(carParkId))
+            //    return BadRequest(new { message = "carParkId är obligatoriskt och får inte vara tomt." });
 
-            if (!int.TryParse(carParkId, out int parsedCarParkId))
-                return BadRequest(new { message = "CarParkId måste vara ett giltigt heltal." });
+            //if (!int.TryParse(carParkId, out int parsedCarParkId))
+            //    return BadRequest(new { message = "CarParkId måste vara ett giltigt heltal." });
 
             try
             {
