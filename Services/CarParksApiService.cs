@@ -13,11 +13,13 @@ namespace GarageQueueUpload.Services
             _httpClient = httpClient;
         }
 
-        public async Task<object> GetQueueById(int id)
+        public async Task<QueueModel> GetQueueById(Guid id)
         {
             var response = await _httpClient.GetAsync($"/api/queue/GetById/{id}");
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<object>(await response.Content.ReadAsStringAsync());
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<QueueModel>(content);
         }
 
         public async Task<object> GetAllQueues()
