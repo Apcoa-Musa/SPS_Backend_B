@@ -1,32 +1,23 @@
-using System;
 using GarageQueueUpload.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StackExchange.Redis;
 using Microsoft.AspNetCore.Builder;
+using StackExchange.Redis;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Läs in konfiguration från appsettings.json
-builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-// Lägg till HttpClient för CarParksApiService
-builder.Services.AddHttpClient<CarParksApiService>(client =>
+// Lägg till RabbitMQ-tjänst
+builder.Services.AddSingleton<RabbitMqService>(sp =>
 {
-    var baseUrl = builder.Configuration["CarParksApi:BaseUrl"];
-    if (string.IsNullOrEmpty(baseUrl))
-    {
-        throw new InvalidOperationException("BaseUrl saknas i appsettings.json för CarParksApi.");
-    }
-    client.BaseAddress = new Uri(baseUrl);
-    Console.WriteLine($"CarParksApi BaseAddress: {client.BaseAddress}");
+    var configuration = builder.Configuration;
+    var hostName = configuration["RabbitMQ:HostName"] ?? throw new ArgumentNullException("RabbitMQ:HostName saknas");
+    var queueName = configuration["RabbitMQ:QueueName"] ?? "QueueUpdates";
+    var userName = configuration["RabbitMQ:UserName"] ?? "guest";
+    var password = configuration["RabbitMQ:Password"] ?? "guest";
+    var port = int.Parse(configuration["RabbitMQ:Port"] ?? "5672");
 
-    var apiKey = builder.Configuration["CarParksApi:ApiKey"];
-    if (!string.IsNullOrEmpty(apiKey))
-    {
-        client.DefaultRequestHeaders.Add("ApiKey", apiKey);
-    }
+    return new RabbitMqService(hostName, queueName, port, userName, password);
 });
 
 // Lägg till Redis
@@ -38,59 +29,41 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
         throw new InvalidOperationException("Redis-anslutningssträngen saknas i appsettings.json");
     }
 
-    try
-    {
-        var multiplexer = ConnectionMultiplexer.Connect(redisConnection);
-        Console.WriteLine("Redis connected successfully.");
-        return multiplexer;
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Failed to connect to Redis: {ex.Message}");
-        throw;
-    }
+    return ConnectionMultiplexer.Connect(redisConnection);
 });
 
-// Lägg till RabbitMQ
-builder.Services.AddSingleton<RabbitMqService>(sp =>
-{
-    try
-    {
-        var configuration = builder.Configuration;
-        var config = new RabbitMqConfig
-        {
-            HostName = configuration["RabbitMQ:HostName"] ?? "localhost",
-            QueueName = configuration["RabbitMQ:QueueName"] ?? "QueueUpdates"
-        };
 
-        return new RabbitMqService(config);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Failed to initialize RabbitMQ: {ex.Message}");
-        throw;
-    }
-});
-
-// Lägg till CarParksApiService
-builder.Services.AddSingleton<CarParksApiService>();
-
-// Lägg till CORS-stöd
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost", policy =>
+    options.AddPolicy("AllowLocalhost4200", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // Tillåt endast denna origin
+        policy.WithOrigins("http://localhost:4200")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
-// Lägg till Swagger
+// Lägg till HttpClient-tjänst för CarParksApiService
+builder.Services.AddHttpClient<CarParksApiService>(client =>
+{
+    var baseUrl = builder.Configuration["CarParksApi:BaseUrl"];
+    if (string.IsNullOrEmpty(baseUrl))
+    {
+        throw new InvalidOperationException("BaseUrl saknas i appsettings.json för CarParksApi.");
+    }
+    client.BaseAddress = new Uri(baseUrl);
+
+    var apiKey = builder.Configuration["CarParksApi:ApiKey"];
+    if (!string.IsNullOrEmpty(apiKey))
+    {
+        client.DefaultRequestHeaders.Add("ApiKey", apiKey);
+    }
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Lägg till controllers
+// Lägg till Controllers
 builder.Services.AddControllers();
 
 var app = builder.Build();
@@ -101,19 +74,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Middleware för CORS
-app.UseCors("AllowLocalhost");
-
+// Middleware
+app.UseCors("AllowLocalhost4200"); 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-try
-{
-    app.Run();
-    Console.WriteLine("Application started successfully.");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Application failed to start: {ex.Message}");
-}
+
+app.Run();

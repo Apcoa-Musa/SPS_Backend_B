@@ -1,29 +1,41 @@
 using RabbitMQ.Client;
+using System;
 using System.Text;
 using System.Text.Json;
 
 namespace GarageQueueUpload.Services
 {
-    public class RabbitMqService
+    public class RabbitMqService : IDisposable
     {
         private readonly string _hostName;
         private readonly string _queueName;
+        private readonly IConnection _connection;
+        private readonly IModel _channel;
 
-        // Ändra konstruktorn så att den tar emot RabbitMqConfig istället för IConfiguration
-        public RabbitMqService(RabbitMqConfig config)
+        public RabbitMqService(string hostName, string queueName, int port, string userName, string password)
         {
-            _hostName = config.HostName;
-            _queueName = config.QueueName;
+            _hostName = hostName;
+            _queueName = queueName;
+
+            var factory = new ConnectionFactory
+            {
+                HostName = _hostName,
+                Port = port,
+                UserName = userName,
+                Password = password
+            };
+
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
+
+            Console.WriteLine($"Connected to RabbitMQ at {_hostName}");
         }
 
         public void SendMessage(object message)
         {
-            var factory = new ConnectionFactory { HostName = _hostName };
+            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            channel.QueueDeclare(
+            _channel.QueueDeclare(
                 queue: _queueName,
                 durable: true,
                 exclusive: false,
@@ -31,14 +43,20 @@ namespace GarageQueueUpload.Services
                 arguments: null
             );
 
-            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
-
-            channel.BasicPublish(
+            _channel.BasicPublish(
                 exchange: "",
                 routingKey: _queueName,
                 basicProperties: null,
                 body: body
             );
+
+            Console.WriteLine($"Message sent to queue {_queueName}");
+        }
+
+        public void Dispose()
+        {
+            _channel?.Dispose();
+            _connection?.Dispose();
         }
     }
 }
