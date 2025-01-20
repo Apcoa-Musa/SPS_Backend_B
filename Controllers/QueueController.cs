@@ -144,9 +144,9 @@ namespace GarageQueueUpload.Controllers
                 var queues = await _carParksApiService.GetAllQueues();
                 Console.WriteLine($"Hämtade rådata: {System.Text.Json.JsonSerializer.Serialize(queues)}");
 
+                var carpark = await _carParksApiService.GetCarParkByDS(parsedCarParkId);
 
-
-                var filteredQueues = queues.Where(q => q.CarParkDSNumber == parsedDsNumber).ToList();
+                var filteredQueues = queues.Where(q => q.CarParkId == carpark.Id).ToList();
                 Console.WriteLine($"Antal filtrerade köer: {filteredQueues.Count}");
 
                 if (!filteredQueues.Any())

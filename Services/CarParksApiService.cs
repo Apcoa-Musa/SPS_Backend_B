@@ -3,16 +3,18 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using GarageQueueUpload.Models;
 
 namespace GarageQueueUpload.Services
 {
     public class CarParksApiService
     {
         private readonly HttpClient _httpClient;
+        private static readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://carparks-api.sps-stage.europark.local/") };
 
         public CarParksApiService(HttpClient httpClient)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            //_httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
        
@@ -21,14 +23,22 @@ namespace GarageQueueUpload.Services
         // Metod för att hämta alla köer
         public async Task<IEnumerable<QueueModel>> GetAllQueues()
         {
-            var response = await _httpClient.GetAsync("/api/queue/GetAll");
+            var response = await _httpClient.GetAsync($"/api/queue/GetAll");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Hämtade rådata: {content}");
             return JsonSerializer.Deserialize<IEnumerable<QueueModel>>(content);
         }
 
+        public async Task<CarParkDto> GetCarParkByDS(string DsNumber)
+        {
+            var response = await _httpClient.GetAsync($"/api/carpark/GetByDsNumber/{DsNumber}");
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<CarParkDto>(content);
+
+        }
         // Metod för att hämta köer baserat på CarParkId
         public async Task<IEnumerable<QueueModel>> GetQueueByCarParkId(Guid carParkId)
         {
