@@ -9,17 +9,12 @@ namespace GarageQueueUpload.Services
 {
     public class CarParksApiService
     {
-        private readonly HttpClient _httpClient;
         private static readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://carparks-api.sps-stage.europark.local/") };
 
         public CarParksApiService(HttpClient httpClient)
         {
             //_httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
-
-       
-        
-
         // Metod för att hämta alla köer
         public async Task<IEnumerable<QueueModel>> GetAllQueues()
         {
