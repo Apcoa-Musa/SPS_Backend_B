@@ -12,9 +12,8 @@ public class QueueModel
     public int VerifiedMemberCount { get; set; }
     public object ActiveQueueMembers { get; set; }
     public Guid CarParkId { get; set; }
-
-    // Lägg till dessa egenskaper
-    public int Priority { get; set; } 
-    public string Description { get; set; } = string.Empty; 
-    public string Status { get; set; } = "Active"; 
+    public Guid ProductTemplateId { get; set; }
+    public int Priority { get; set; }
+    public string Description { get; set; }
+    public string Status { get; set; }
 }

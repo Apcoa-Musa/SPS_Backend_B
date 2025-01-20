@@ -57,20 +57,20 @@ namespace GarageQueueUpload.Services
 
             return JsonSerializer.Deserialize<object>(await response.Content.ReadAsStringAsync());
         }
-        // Metod för att hämta och generera CSV för köer baserat på CarParkId
+       
         public async Task<byte[]> DownloadQueueList(Guid carParkId)
         {
             var response = await _httpClient.GetAsync($"/api/queue/DownloadQueueList/{carParkId}");
             response.EnsureSuccessStatusCode();
 
-            // Returnera CSV-data som byte-array
+           
             var fileBytes = await response.Content.ReadAsByteArrayAsync();
             Console.WriteLine($"Hämtade CSV-data för CarParkId: {carParkId}, storlek: {fileBytes.Length} byte");
             return fileBytes;
         }
 
 
-        // Ny metod för att hämta köer baserat på DS-nummer
+        
         public async Task<IEnumerable<QueueModel>> GetQueuesByDs(int dsNumber)
         {
             var response = await _httpClient.GetAsync($"/api/queue/GetQueuesByDs/{dsNumber}");

@@ -58,27 +58,34 @@ namespace GarageQueueUpload.Controllers
                     return NotFound(new { message = $"Inga köer hittades för CarParkId {carParkId}." });
                 }
 
+                
                 var csvBuilder = new System.Text.StringBuilder();
-                csvBuilder.AppendLine("Id,Name,CarParkId,CarParkDSNumber,DateCreated,QueuePrice,CurrentPosition");
+                csvBuilder.AppendLine("Id,Name,CarParkId,ProductTemplateId,DateCreated,QueuePrice,CurrentPosition");
 
                 int currentPosition = 1;
 
                 Console.WriteLine("Hämtade köer från API:");
                 foreach (var queue in queues)
                 {
+                    
                     csvBuilder.AppendLine(
-                        $"{queue.QueueId},{queue.QueueName},{queue.CarParkId},{queue.CarParkDSNumber},{queue.DateCreated},{queue.QueuePrice},{currentPosition++}");
-                    Console.WriteLine($"QueueId: {queue.QueueId}, CarParkDSNumber: {queue.CarParkDSNumber}");
+                        $"{queue.QueueId},{queue.QueueName ?? "N/A"},{queue.CarParkId},{queue.ProductTemplateId},{queue.DateCreated:yyyy-MM-dd HH:mm:ss},{queue.QueuePrice},{currentPosition++}");
+
+                    Console.WriteLine($"QueueId: {queue.QueueId}, CarParkId: {queue.CarParkId}");
                 }
 
+                
                 var fileBytes = System.Text.Encoding.UTF8.GetBytes(csvBuilder.ToString());
                 return File(fileBytes, "text/csv", $"QueueList_{carParkId}.csv");
             }
             catch (Exception ex)
             {
+             
+                Console.WriteLine($"Fel vid generering av CSV: {ex.Message}");
                 return StatusCode(500, new { message = "Ett fel uppstod vid generering av kölistan.", error = ex.Message });
             }
         }
+
 
 
         [HttpGet("GetByCarParkId/{carParkId}")]
