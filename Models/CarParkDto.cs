@@ -1,5 +1,13 @@
-﻿namespace GarageQueueUpload.Models
+﻿#nullable enable
+
+using System;
+
+namespace GarageQueueUpload.Models
 {
+    public class CarParkHasKeys
+    {
+        public bool HasKeys { get; set; } = false; // Standardvärde
+    }
     public class CarParkDto
     {
         public Guid Id { get; set; }
@@ -25,7 +33,7 @@
         public bool VatByDefault { get; set; }
         public string? VatCode { get; set; }
         public string? ContractTemplateName { get; set; }
-        public string? OnlineCustomerInfo { get; set; }     //Description for online customers
+        public string? OnlineCustomerInfo { get; set; }
         public bool? HasDigitalPermit { get; set; }
         public int? District { get; set; }
         public int? Region { get; set; }
@@ -35,7 +43,7 @@
         public string? SiteIDLong { get; set; }
         public string? CarParkLongName { get; set; }
         public string? GeoFence { get; set; }
-        public CarParkHasKeys HasKeys { get; set; }
+        public CarParkHasKeys HasKeys { get; set; } = new CarParkHasKeys(); // Initiera med standardvärde
         public Guid? KeyManagerId { get; set; }
         public Guid? CompanyId { get; set; }
         public Guid BannerId { get; set; }
