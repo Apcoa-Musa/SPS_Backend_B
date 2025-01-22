@@ -2,7 +2,6 @@ using GarageQueueUpload.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Text;
@@ -141,25 +140,17 @@ namespace GarageQueueUpload.Controllers
 
             try
             {
-                // Hämta alla köer
                 var queues = await _carParksApiService.GetAllQueues();
                 Console.WriteLine($"Hämtade rådata: {System.Text.Json.JsonSerializer.Serialize(queues)}");
 
-                // Hämta CarPark baserat på DS-nummer
                 var carpark = await _carParksApiService.GetCarParkByDS(parsedDsNumber.ToString());
-
                 if (carpark == null)
                 {
                     Console.WriteLine($"Ingen CarPark hittades för DS-nummer {dsNumber}.");
                     return NotFound(new { message = $"Ingen CarPark hittades för DS-nummer {dsNumber}." });
                 }
 
-                Console.WriteLine($"Hämtade CarPark med ID {carpark.Id} för DS-nummer {dsNumber}.");
-
-                // Filtrera köer baserat på CarParkId
                 var filteredQueues = queues.Where(q => q.CarParkId == carpark.Id).ToList();
-                Console.WriteLine($"Antal filtrerade köer: {filteredQueues.Count}");
-
                 if (!filteredQueues.Any())
                 {
                     Console.WriteLine($"Inga köer hittades för DS-nummer {dsNumber}. En tom CSV-fil returneras.");
@@ -169,18 +160,21 @@ namespace GarageQueueUpload.Controllers
                     return File(Encoding.UTF8.GetBytes(csvBuilder.ToString()), "text/csv", $"Empty_QueuesByDS_{dsNumber}.csv");
                 }
 
-                // Generera CSV
                 var csvBuilderWithData = new System.Text.StringBuilder();
                 csvBuilderWithData.AppendLine("Id,Name,CarParkDSNumber,Priority,Description,Status,DateCreated,QueuePrice,CurrentPosition");
 
                 int currentPosition = 1;
                 foreach (var queue in filteredQueues)
                 {
+                    var queueName = queue.QueueName ?? "N/A";
+                    var description = queue.Description ?? "N/A";
+                    var status = queue.Status ?? "N/A";
+                    var dateCreated = queue.DateCreated?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A";
+
                     csvBuilderWithData.AppendLine(
-                        $"{queue.QueueId},{queue.QueueName},{queue.CarParkDSNumber},{queue.Priority},{queue.Description},{queue.Status},{queue.DateCreated},{queue.QueuePrice},{currentPosition++}");
+                        $"{queue.QueueId},{queueName},{queue.CarParkDSNumber},{queue.Priority},{description},{status},{dateCreated},{queue.QueuePrice},{currentPosition++}");
                 }
 
-                Console.WriteLine($"CSV-fil genererad för DS-nummer {dsNumber}.");
                 var fileBytes = Encoding.UTF8.GetBytes(csvBuilderWithData.ToString());
                 var fileName = $"QueuesByDS_{dsNumber}.csv";
 
@@ -194,8 +188,10 @@ namespace GarageQueueUpload.Controllers
         }
 
 
-
-
-
     }
+
+
+
+
+
 }

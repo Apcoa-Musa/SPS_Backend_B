@@ -9,32 +9,34 @@ namespace GarageQueueUpload.Services
 {
     public class CarParksApiService
     {
-        private static readonly HttpClient _httpClient = new HttpClient { BaseAddress = new Uri("https://carparks-api.sps-stage.europark.local/") };
+        private readonly HttpClient _httpClient;
 
         public CarParksApiService(HttpClient httpClient)
         {
-            //_httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
-        // Metod för att hämta alla köer
+
+        
         public async Task<IEnumerable<QueueModel>> GetAllQueues()
         {
             var response = await _httpClient.GetAsync($"/api/queue/GetAll");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"API Response: {content}");
             return JsonSerializer.Deserialize<IEnumerable<QueueModel>>(content);
         }
 
-        public async Task<CarParkDto> GetCarParkByDS(string DsNumber)
+        public async Task<QueueModel> GetCarParkByDS(string DsNumber)
         {
             var response = await _httpClient.GetAsync($"/api/carpark/GetByDsNumber/{DsNumber}");
             response.EnsureSuccessStatusCode();
 
             var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<CarParkDto>(content);
+            return JsonSerializer.Deserialize<QueueModel>(content);
 
         }
-        // Metod för att hämta köer baserat på CarParkId
+        
         public async Task<IEnumerable<QueueModel>> GetQueueByCarParkId(Guid carParkId)
         {
             var response = await _httpClient.GetAsync($"/api/queue/GetByCarParkId/{carParkId}");
@@ -44,7 +46,7 @@ namespace GarageQueueUpload.Services
             return JsonSerializer.Deserialize<IEnumerable<QueueModel>>(content);
         }
 
-        // Metod för att hämta en specifik kö baserat på QueueId
+        
         public async Task<QueueModel> GetQueueById(Guid queueId)
         {
             var response = await _httpClient.GetAsync($"/api/queue/GetById/{queueId}");
@@ -54,7 +56,7 @@ namespace GarageQueueUpload.Services
             return JsonSerializer.Deserialize<QueueModel>(content);
         }
 
-        // Metod för att hämta detaljerade ködata för ett garage
+        
         public async Task<object> GetQueueDetailsForGarage(Guid carParkId)
         {
             var response = await _httpClient.GetAsync($"/api/queue/GetQueueDetailsForGarage/{carParkId}");
