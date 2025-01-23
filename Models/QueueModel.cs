@@ -1,25 +1,21 @@
-#nullable enable
 using System;
 
 namespace GarageQueueUpload.Models
 {
-
     public class QueueModel
     {
+        public Guid Id { get; set; }
         public Guid QueueId { get; set; }
-        public string QueueName { get; set; } = "N/A";
+        public string Name { get; set; }
         public Guid CarParkId { get; set; }
         public int CarParkDSNumber { get; set; }
-        public string Priority { get; set; } = "N/A";
-        public string Description { get; set; } = "N/A";
-        public string Status { get; set; } = "N/A";
-        public DateTime? DateCreated { get; set; } = null;
-        public decimal QueuePrice { get; set; } = 0m;
-        public Guid ProductTemplateId { get; set; } 
-        public Guid Id { get; set; }
-        public string? CarParkFacilityName { get; set; }
-        public int VerifiedMemberCount { get; set; } = 0;
-        public object? ActiveQueueMembers { get; set; } 
+        public string Priority { get; set; }
+        public string Description { get; set; }
+        public string Status { get; set; }
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateUpdated { get; set; }
+        public int CurrentPosition { get; set; }
+        public decimal QueuePrice { get; set; }
+        public Guid ProductTemplateId { get; set; }
     }
 }
-

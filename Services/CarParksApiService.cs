@@ -16,75 +16,80 @@ namespace GarageQueueUpload.Services
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
+        // Generisk metod för att deserialisera API-svar
+        private async Task<T> GetDeserializedResponse<T>(string endpoint)
+        {
+            try
+            {
+                var response = await _httpClient.GetAsync(endpoint);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }) ?? throw new Exception($"Tom respons från {endpoint}");
+            }
+            catch (HttpRequestException httpEx)
+            {
+                Console.WriteLine($"HTTP Request Error: {httpEx.Message}");
+                throw;
+            }
+            catch (JsonException jsonEx)
+            {
+                Console.WriteLine($"JSON Parsing Error: {jsonEx.Message}");
+                throw;
+            }
+        }
+
         
         public async Task<IEnumerable<QueueModel>> GetAllQueues()
         {
-            var response = await _httpClient.GetAsync($"/api/queue/GetAll");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"API Response: {content}");
-            return JsonSerializer.Deserialize<IEnumerable<QueueModel>>(content);
+            return await GetDeserializedResponse<IEnumerable<QueueModel>>("/api/queue/GetAll");
         }
 
+        
         public async Task<QueueModel> GetCarParkByDS(string DsNumber)
         {
-            var response = await _httpClient.GetAsync($"/api/carpark/GetByDsNumber/{DsNumber}");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<QueueModel>(content);
-
+            return await GetDeserializedResponse<QueueModel>($"/api/carpark/GetByDsNumber/{DsNumber}");
         }
+
         
         public async Task<IEnumerable<QueueModel>> GetQueueByCarParkId(Guid carParkId)
         {
-            var response = await _httpClient.GetAsync($"/api/queue/GetByCarParkId/{carParkId}");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<QueueModel>>(content);
+            return await GetDeserializedResponse<IEnumerable<QueueModel>>($"/api/queue/GetByCarParkId/{carParkId}");
         }
 
         
-        public async Task<QueueModel> GetQueueById(Guid queueId)
+        public async Task<QueueModel> GetQueueById(Guid Id)
         {
-            var response = await _httpClient.GetAsync($"/api/queue/GetById/{queueId}");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<QueueModel>(content);
+            return await GetDeserializedResponse<QueueModel>($"/api/queue/GetById/{Id}");
         }
+
+     
 
         
-        public async Task<object> GetQueueDetailsForGarage(Guid carParkId)
-        {
-            var response = await _httpClient.GetAsync($"/api/queue/GetQueueDetailsForGarage/{carParkId}");
-            response.EnsureSuccessStatusCode();
-
-            return JsonSerializer.Deserialize<object>(await response.Content.ReadAsStringAsync());
-        }
-       
         public async Task<byte[]> DownloadQueueList(Guid carParkId)
         {
-            var response = await _httpClient.GetAsync($"/api/queue/DownloadQueueList/{carParkId}");
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var response = await _httpClient.GetAsync($"/api/queue/DownloadQueueList/{carParkId}");
+                response.EnsureSuccessStatusCode();
 
-           
-            var fileBytes = await response.Content.ReadAsByteArrayAsync();
-            Console.WriteLine($"Hämtade CSV-data för CarParkId: {carParkId}, storlek: {fileBytes.Length} byte");
-            return fileBytes;
+                var fileBytes = await response.Content.ReadAsByteArrayAsync();
+                Console.WriteLine($"Hämtade CSV-data för CarParkId: {carParkId}, storlek: {fileBytes.Length} byte");
+                return fileBytes;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fel vid hämtning av CSV: {ex.Message}");
+                throw;
+            }
         }
 
-
-        
         public async Task<IEnumerable<QueueModel>> GetQueuesByDs(int dsNumber)
         {
-            var response = await _httpClient.GetAsync($"/api/queue/GetQueuesByDs/{dsNumber}");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<IEnumerable<QueueModel>>(content);
+            return await GetDeserializedResponse<IEnumerable<QueueModel>>($"/api/queue/GetQueuesByDs/{dsNumber}");
         }
     }
 }
