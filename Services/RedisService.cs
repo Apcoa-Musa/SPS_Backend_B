@@ -1,7 +1,7 @@
 using StackExchange.Redis;
 using System.Threading.Tasks;
 
-namespace GarageQueueUpload.Services
+namespace GarageQueueDownload.Services
 {
     public class RedisService
     {

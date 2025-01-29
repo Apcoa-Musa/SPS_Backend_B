@@ -1,4 +1,4 @@
-namespace GarageQueueUpload.Models
+namespace GarageQueueDownload.Models
 {
     public class QueueMember
     {

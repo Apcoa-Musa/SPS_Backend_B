@@ -1,6 +1,6 @@
 using System;
 
-namespace GarageQueueUpload.Models
+namespace GarageQueueDownload.Models
 {
     public class QueueModel
     {

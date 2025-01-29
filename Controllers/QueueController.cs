@@ -1,4 +1,4 @@
-using GarageQueueUpload.Services;
+using GarageQueueDownload.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ using System.Text;
 
 
 
-namespace GarageQueueUpload.Controllers
+namespace GarageQueueDownload.Controllers
 {
     [ApiController]
     [Route("api/queue")]

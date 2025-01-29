@@ -3,7 +3,7 @@ using System;
 using System.Text;
 using System.Text.Json;
 
-namespace GarageQueueUpload.Services
+namespace GarageQueueDownload.Services
 {
     public class RabbitMqService : IDisposable
     {

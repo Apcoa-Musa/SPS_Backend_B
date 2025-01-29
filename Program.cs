@@ -1,4 +1,4 @@
-using GarageQueueUpload.Services;
+using GarageQueueDownload.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Builder;
